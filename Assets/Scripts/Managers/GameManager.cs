@@ -71,6 +71,7 @@ namespace Managers
             // Grab a vehicle spawn transfrom at random.
             Transform randomPoint = GetRandomSpawnPoint();
             
+            // Instantiate a vehicle prefab and initialize it.
             TrafficVehicle newVehicle = Instantiate(vehiclePrefab);
             newVehicle.Initialize(randomPoint);
         }
