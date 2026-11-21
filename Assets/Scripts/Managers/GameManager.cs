@@ -1,4 +1,5 @@
 using Enemies;
+using Events;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -46,6 +47,9 @@ namespace Managers
 
             // Set the initial state of the game.
             state = GameState.Playing;
+
+            // Subscribe to Traffic Collision Events.
+            EventBus.Subscribe<TrafficCollisionEvent>(OnTrafficCollision);
         }
 
         private void Update()
@@ -94,10 +98,27 @@ namespace Managers
             return spawnPoints[rand];
         }
 
+        /// <summary>
+        /// Callback for <see cref="TrafficCollisionEvent"/>s.
+        /// </summary>
+        /// <param name="collision">The collision object.</param>
+        private void OnTrafficCollision(TrafficCollisionEvent collision)
+        {
+            state = GameState.PlayerHit;
+
+            print("Player got hit!");
+        }
+
         private void OnDestroy()
         {
-            // Only clear the reference if this object is the static Instance set in Awake().
-            if (clearInstance) Instance = null;
+            // Only do destruction logic if this object is the static Instance set in Awake().
+            if (clearInstance)
+            {
+                Instance = null;
+
+                // Unsubscribe from Traffic Collision Events.
+                EventBus.Unsubscribe<TrafficCollisionEvent>(OnTrafficCollision);
+            }
         }
     }
 }

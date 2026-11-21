@@ -1,3 +1,4 @@
+using Events;
 using UnityEngine;
 
 namespace Enemies
@@ -78,6 +79,9 @@ namespace Enemies
             if (collision.collider.CompareTag(PLAYER_TAG))
             {
                 isDriving = false;
+
+                // Fire a traffic collision event.
+                EventBus.Publish(new TrafficCollisionEvent());
             }
         }
 
