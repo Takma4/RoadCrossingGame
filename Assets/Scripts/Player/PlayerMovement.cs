@@ -50,6 +50,10 @@ namespace Player
             Move(moveInput);
         }
 
+        /// <summary>
+        /// Moves the <see cref="controller"/> given the input vector.
+        /// </summary>
+        /// <param name="moveInput">The move input vector.</param>
         private void Move(Vector3 moveInput)
         {
             float speed = GetDesiredSpeed();
@@ -111,6 +115,7 @@ namespace Player
 
         /// <summary>
         /// Rotates the object this script belongs to the input direction.
+        /// Uses <see cref="movePlane"/> as the reference point.
         /// </summary>
         /// <param name="move">The move input</param>
         private void RotatePlayer(Vector2 move)

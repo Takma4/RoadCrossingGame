@@ -1,4 +1,3 @@
-using System.Drawing;
 using UnityEngine;
 
 namespace Enemies
@@ -16,6 +15,11 @@ namespace Enemies
         [Header("Settings")]
         [SerializeField] private float moveSpeed = 10f;
 
+        private bool isDriving = true;
+
+        private const string PLAYER_TAG = "Player";
+        private const string DESTRUCTION_ZONE_TAG = "DestructionZone";
+
         private void Reset()
         {
             rigidbody = GetComponent<Rigidbody>();
@@ -23,6 +27,9 @@ namespace Enemies
 
         private void FixedUpdate()
         {
+            // Don't do any physics calculation if we should not be driving.
+            if (!isDriving) return;
+            
             // Calculate the movement vector and add it to the current position of the rigidbody.
             Vector3 movement = moveSpeed * Time.fixedDeltaTime * transform.forward;
             rigidbody.MovePosition(rigidbody.position + movement);
@@ -36,6 +43,8 @@ namespace Enemies
         {
             rigidbody.position = point.position;
             rigidbody.rotation = point.rotation;
+
+            isDriving = true;
         }
 
         /// <summary>
@@ -47,6 +56,8 @@ namespace Enemies
         {
             rigidbody.position = worldPos;
             rigidbody.rotation = rotation;
+
+            isDriving = true;
         }
 
         /// <summary>
@@ -59,6 +70,24 @@ namespace Enemies
             if (speed < 2f) return;
 
             moveSpeed = speed;
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            // Stop driving if we collided with the player.
+            if (collision.collider.CompareTag(PLAYER_TAG))
+            {
+                isDriving = false;
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            // Destroy this gameObject if we collide with a destruction zone trigger.
+            if (other.CompareTag(DESTRUCTION_ZONE_TAG))
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }
