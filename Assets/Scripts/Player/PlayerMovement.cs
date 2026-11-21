@@ -41,13 +41,30 @@ namespace Player
 
         private void Update()
         {
-            Vector2 move = GetMoveVectorFromInput();
-            float speed = GetDesiredSpeed();
+            Vector2 moveInput = GetMoveVectorFromInput();
             
-            RotatePlayer(move);
+            // Rotate the player towards the input direction.
+            RotatePlayer(moveInput);
 
-            // Move the controller. Make sure the movement is frame-rate independent by multiplying by Time.deltaTime.
-            controller.Move(speed * Time.deltaTime * move);
+            // Move the player using the input.
+            Move(moveInput);
+        }
+
+        private void Move(Vector3 moveInput)
+        {
+            float speed = GetDesiredSpeed();
+
+            // Calculate the movment vector using the speed and the move input.
+            Vector3 nextMovement = speed * moveInput;
+
+            // Calculate gravity.
+            nextMovement -= new Vector3(0f, 9.81f, 0f);
+
+            // Make sure the movement is frame-rate independent by multiplying by Time.deltaTime.
+            nextMovement *= Time.deltaTime;
+
+            // Move the controller.
+            controller.Move(nextMovement);
         }
 
         /// <summary>
