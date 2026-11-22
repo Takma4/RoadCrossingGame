@@ -1,3 +1,5 @@
+using Events;
+using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,6 +22,7 @@ namespace Player
         [SerializeField, Range(0f, 1f)] private float rotationSpeed = 1f;
 
         private float rotationVelocity;
+        private bool movementPaused = true;
 
         /// <summary>
         /// If the current move speed is not within <c>[targetSpeed - SPEED_OFFSET, targetSpeed + SPEED_OFFSET]</c>,
@@ -31,12 +34,27 @@ namespace Player
         private void Start()
         {
             if (movePlane == null) movePlane = Camera.main.transform;
+
+            // Start paused by default.
+            movementPaused = true;
         }
 
         private void Reset()
         {
             // Grab the reference automatically.
             controller = GetComponent<CharacterController>();
+        }
+
+        private void OnEnable()
+        {
+            // Listen to GameStateEvents when enabled.
+            EventBus.Subscribe<GameStateEvent>(OnGameStateChanged);
+        }
+
+        private void OnDisable()
+        {
+            // Stop listening to GameStateEvents when disabled.
+            EventBus.Unsubscribe<GameStateEvent>(OnGameStateChanged);
         }
 
         private void Update()
@@ -48,6 +66,16 @@ namespace Player
 
             // Move the player using the input.
             Move(moveInput);
+        }
+
+        /// <summary>
+        /// Callback for when the game state changes.
+        /// </summary>
+        /// <param name="stateEvent">The event arguments.</param>
+        private void OnGameStateChanged(GameStateEvent stateEvent)
+        {
+            // Pause movement when we're not playing.
+            movementPaused = stateEvent.CurrentState != GameManager.GameState.Playing;
         }
 
         /// <summary>
@@ -74,9 +102,12 @@ namespace Player
         /// <summary>
         /// Checks the input and returns a vector that represents the intended movement.
         /// </summary>
-        /// <returns>A normalized vector where Y is always 0 (horizontal movement only).</returns>
+        /// <returns>A normalized vector where Y is always 0 (horizontal movement only) or <see cref="Vector2.zero"/> if the movement is paused.</returns>
         private Vector2 GetMoveVectorFromInput()
         {
+            // No movement allowd when paused.
+            if (movementPaused) return Vector2.zero;
+
             Vector2 move = Vector2.zero;
 
             if (Keyboard.current.aKey.isPressed) move = new(-1f, 0);

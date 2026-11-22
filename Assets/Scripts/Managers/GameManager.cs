@@ -77,7 +77,14 @@ namespace Managers
             // If the time has passed, change the game state.
             if (startTimer > timeToStart)
             {
+                // Store the previous state.
+                GameState previous = state;
+
+                // Change the current state.
                 state = GameState.Playing;
+
+                // Publish the event.
+                EventBus.Publish<GameStateEvent>(new(previous, state));
             }
         }
 
@@ -131,14 +138,21 @@ namespace Managers
         }
 
         /// <summary>
-        /// Callback for <see cref="TrafficCollisionEvent"/>s.
+        /// Callback for <see cref="TrafficCollisionEvent"/>s. Publishes a <see cref="GameStateEvent"/> if the state is not
+        /// <see cref="GameState.PlayerHit"/> already.
         /// </summary>
         /// <param name="collision">The collision object.</param>
         private void OnTrafficCollision(TrafficCollisionEvent collision)
         {
+            // Store the previous state.
+            GameState previous = state;
+
+            // Change the current state.
             state = GameState.PlayerHit;
 
-            print("Player got hit!");
+            // Publish a GameStateEvent if we actually changed state.
+            if (previous != state)
+                EventBus.Publish(new GameStateEvent(previous, state));
         }
 
         private void OnDestroy()
