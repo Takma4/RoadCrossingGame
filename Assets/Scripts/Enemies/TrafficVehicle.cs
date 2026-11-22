@@ -14,9 +14,11 @@ namespace Enemies
         [SerializeField] private Rigidbody rigidbody;
 
         [Header("Settings")]
-        [SerializeField] private float moveSpeed = 10f;
+        [SerializeField] private float minMoveSpeed = 7f;
+        [SerializeField] private float maxMoveSpeed = 20f;
 
         private bool isDriving = true;
+        private float moveSpeed;
 
         private const string PLAYER_TAG = "Player";
         private const string DESTRUCTION_ZONE_TAG = "DestructionZone";
@@ -46,6 +48,8 @@ namespace Enemies
             rigidbody.rotation = point.rotation;
 
             isDriving = true;
+
+            PickMoveSpeed();
         }
 
         /// <summary>
@@ -59,6 +63,8 @@ namespace Enemies
             rigidbody.rotation = rotation;
 
             isDriving = true;
+
+            PickMoveSpeed();
         }
 
         /// <summary>
@@ -71,6 +77,16 @@ namespace Enemies
             if (speed < 2f) return;
 
             moveSpeed = speed;
+        }
+
+        /// <summary>
+        /// Picks a random move speed between <see cref="minMoveSpeed"/> and <see cref="maxMoveSpeed"/> and applies it.
+        /// </summary>
+        private void PickMoveSpeed()
+        {
+            float speed = Random.Range(minMoveSpeed, maxMoveSpeed);
+
+            SetMoveSpeed(speed);
         }
 
         private void OnCollisionEnter(Collision collision)
