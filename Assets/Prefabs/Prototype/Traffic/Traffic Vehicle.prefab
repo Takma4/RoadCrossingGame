@@ -49,8 +49,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemies.TrafficVehicle
   rigidbody: {fileID: 3394844098929294070}
-  minMoveSpeed: 7
-  maxMoveSpeed: 20
+  minMoveSpeed: 14
+  maxMoveSpeed: 30
   detectionDistance: 10
   vehiclesMask:
     serializedVersion: 2

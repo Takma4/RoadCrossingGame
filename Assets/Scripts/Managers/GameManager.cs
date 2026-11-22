@@ -12,7 +12,7 @@ namespace Managers
     {
         public enum GameState
         {
-            Playing, PlayerHit, PlayerCrossed
+            Readying, Playing, PlayerHit, PlayerCrossed
         }
 
         public static GameManager Instance { get; private set; }
@@ -24,10 +24,14 @@ namespace Managers
         [SerializeField] private List<Transform> spawnPoints;
         [SerializeField] private float spawnInterval = 2f;
 
+        [Header("Settings")]
+        [SerializeField] private float timeToStart = 3f;
+
         private bool clearInstance = false;
         
         private GameState state;
         private float spawnTimer = 0f;
+        private float startTimer = 0f;
 
         private void Awake()
         {
@@ -46,13 +50,41 @@ namespace Managers
             Instance = this;
 
             // Set the initial state of the game.
-            state = GameState.Playing;
+            state = GameState.Readying;
 
             // Subscribe to Traffic Collision Events.
             EventBus.Subscribe<TrafficCollisionEvent>(OnTrafficCollision);
         }
 
         private void Update()
+        {
+            UpdateStartTimer();
+            UpdateSpawnTimer();
+        }
+
+        /// <summary>
+        /// Counts <see cref="timeToStart"/> seconds and sets the <see cref="state"/>
+        /// to <see cref="GameState.Playing"/>.
+        /// </summary>
+        private void UpdateStartTimer()
+        {
+            // Don't do anything if we're not in the Readying state.
+            if (state != GameState.Readying) return;
+            
+            // Tick the timer.
+            startTimer += Time.deltaTime;
+
+            // If the time has passed, change the game state.
+            if (startTimer > timeToStart)
+            {
+                state = GameState.Playing;
+            }
+        }
+
+        /// <summary>
+        /// Ticks the <see cref="spawnTimer"/> and spawns a vehicle if the time intreval has passed.
+        /// </summary>
+        private void UpdateSpawnTimer()
         {
             // Tick the timer.
             spawnTimer += Time.deltaTime;
