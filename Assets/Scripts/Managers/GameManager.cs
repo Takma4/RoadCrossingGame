@@ -56,6 +56,12 @@ namespace Managers
             EventBus.Subscribe<TrafficCollisionEvent>(OnTrafficCollision);
         }
 
+        private void Start()
+        {
+            // Publish the CountdownStartedEvent on Start() to give other scripts time to subscribe to this event on Awake().
+            EventBus.Publish(new CountdownStartedEvent(timeToStart));
+        }
+
         private void Update()
         {
             UpdateStartTimer();
