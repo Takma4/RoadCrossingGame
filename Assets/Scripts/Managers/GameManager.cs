@@ -93,6 +93,9 @@ namespace Managers
         /// </summary>
         private void UpdateSpawnTimer()
         {
+            // Don't spawn any more vehicles if the player got hit.
+            if (state == GameState.PlayerHit) return;
+            
             // Tick the timer.
             spawnTimer += Time.deltaTime;
 

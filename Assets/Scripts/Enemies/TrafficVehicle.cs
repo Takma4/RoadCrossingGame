@@ -16,12 +16,15 @@ namespace Enemies
         [Header("Settings")]
         [SerializeField] private float minMoveSpeed = 7f;
         [SerializeField] private float maxMoveSpeed = 20f;
+        [Tooltip("Used when the player gets hit - all the other vehicles come to a full stop using this multiplier.")]
+        [SerializeField] private float stoppingSpeed = 2f;
 
         [Header("Vehicle Avoidance")]
         [SerializeField] private float detectionDistance = 10f;
         [SerializeField] private LayerMask vehiclesMask;
 
         private bool isDriving = true;
+        private bool isGameOver = false;
         
         /// <summary>
         /// The current move speed.
@@ -41,6 +44,16 @@ namespace Enemies
             rigidbody = GetComponent<Rigidbody>();
         }
 
+        private void OnEnable()
+        {
+            EventBus.Subscribe<GameStateEvent>(OnGameStateChanged);
+        }
+
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<GameStateEvent>(OnGameStateChanged);
+        }
+
         private void FixedUpdate()
         {
             // Don't do any physics calculations if we're not driving.
@@ -54,6 +67,15 @@ namespace Enemies
         }
 
         /// <summary>
+        /// Callback for when the game state changes.
+        /// </summary>
+        /// <param name="stateEvent">The event arguments.</param>
+        private void OnGameStateChanged(GameStateEvent stateEvent)
+        {
+            isGameOver = stateEvent.CurrentState == Managers.GameManager.GameState.PlayerHit;
+        }
+
+        /// <summary>
         /// Sets the position and rotation to match the <paramref name="point"/> Transform using the vehicle's Rigidbody.
         /// </summary>
         /// <param name="point">The transform to match.</param>
@@ -63,6 +85,7 @@ namespace Enemies
             rigidbody.rotation = point.rotation;
 
             isDriving = true;
+            isGameOver = false;
 
             PickDesiredMoveSpeed();
         }
@@ -78,6 +101,7 @@ namespace Enemies
             rigidbody.rotation = rotation;
 
             isDriving = true;
+            isGameOver = false;
 
             PickDesiredMoveSpeed();
         }
@@ -112,6 +136,12 @@ namespace Enemies
         /// <returns>The move speed closest to the <see cref="desiredSpeed"/> that the situation allows.</returns>
         private float GetMoveSpeed()
         {
+            // If the player got hit, gradually reduce speed until we come to a full stop.
+            if (isGameOver)
+            {
+                return Mathf.Lerp(moveSpeed, 0f, Time.deltaTime * stoppingSpeed);
+            }
+            
             // Initialize the result to the desiredSpeed. We will return the desiredSpeed if the raycast below doesn't hit anything.
             float result = desiredSpeed;
 
