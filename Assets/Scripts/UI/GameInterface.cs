@@ -2,6 +2,7 @@ using Events;
 using PrimeTween;
 using TMPro;
 using UnityEngine;
+using Managers;
 
 namespace UI
 {
@@ -10,17 +11,71 @@ namespace UI
     /// </summary>
     public class GameInterface : MonoBehaviour
     {
-        [Header("References")]
+        [Header("Countdown")]
         [SerializeField] private TextMeshProUGUI countdownTimerText;
+
+        [Header("Player Hit")]
+        [SerializeField] private TextMeshProUGUI playerHitHeaderText;
+        [SerializeField] private TextMeshProUGUI playerHitBodyText;
 
         private void Awake()
         {
+            // Subscribe to events.
             EventBus.Subscribe<CountdownStartedEvent>(OnCountdownStarted);
+            EventBus.Subscribe<GameStateEvent>(OnGameStateChanged);
+
+            // Set the initial state of the text game objects.
+            playerHitHeaderText.gameObject.SetActive(false);
+            playerHitBodyText.gameObject.SetActive(false);
         }
 
         private void OnDestroy()
         {
+            // Unsubscribe from events to cleanup.
             EventBus.Unsubscribe<CountdownStartedEvent>(OnCountdownStarted);
+            EventBus.Unsubscribe<GameStateEvent>(OnGameStateChanged);
+        }
+
+        /// <summary>
+        /// Callback for when the game state changes.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        private void OnGameStateChanged(GameStateEvent e)
+        {
+            if (e.CurrentState == GameManager.GameState.PlayerHit) DisplayPlayerGotHitScreen();
+        }
+
+        /// <summary>
+        /// Plays the UI animation when the player gets hit by a vehicle.
+        /// </summary>
+        private void DisplayPlayerGotHitScreen()
+        {
+            // Enable the text game objects.
+            playerHitHeaderText.gameObject.SetActive(true);
+            playerHitBodyText.gameObject.SetActive(true);
+
+            // Set their properties - start large and transparent, we will tween back to a scale and alpha of 1.
+            playerHitHeaderText.transform.localScale = new(1.5f, 1.5f, 1.5f);
+            playerHitHeaderText.alpha = 0f;
+
+            playerHitBodyText.transform.localScale = new(1.5f, 1.5f, 1.5f);
+            playerHitBodyText.alpha = 0f;
+
+            // Play the animation for the header text.
+            // 0.3 duration for the scale.
+            // 0.133 duration for the alpha.
+            Tween.Scale(playerHitHeaderText.transform, 1f, 0.3f, Ease.InOutBounce);
+            Tween.Alpha(playerHitHeaderText, 1f, 0.133f);
+
+            // Wait 0.4 seconds before playing body animation.
+            Tween.Delay(0.4f, () =>
+            {
+                // Play the animation for the body text.
+                // 0.3 duration for the scale.
+                // 0.133 duration for the alpha.
+                Tween.Scale(playerHitBodyText.transform, 1f, 0.3f, Ease.InOutBounce);
+                Tween.Alpha(playerHitBodyText, 1f, 0.133f);
+            });
         }
 
         /// <summary>
