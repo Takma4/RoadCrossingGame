@@ -34,6 +34,7 @@ Transform:
   - {fileID: 2403246094838398976}
   - {fileID: 965471511040454199}
   - {fileID: 360152322180563821}
+  - {fileID: 6020046239265197644}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!114 &1531971622408603103
@@ -49,10 +50,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemies.TrafficVehicle
   rigidbody: {fileID: 3394844098929294070}
+  avoidanceOrigin: {fileID: 6020046239265197644}
   minMoveSpeed: 30
   maxMoveSpeed: 50
   stoppingSpeed: 2
-  detectionDistance: 10
+  detectionDistance: 20
   vehiclesMask:
     serializedVersion: 2
     m_Bits: 128
@@ -285,6 +287,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7322370928928086155
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6020046239265197644}
+  m_Layer: 7
+  m_Name: Avoidance Origin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6020046239265197644
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7322370928928086155}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 1.776}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1907926805976188467}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7866181859604725641
 GameObject:
   m_ObjectHideFlags: 0

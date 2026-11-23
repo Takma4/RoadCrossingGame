@@ -12,6 +12,8 @@ namespace Enemies
     {
         [Header("References")]
         [SerializeField] private Rigidbody rigidbody;
+        [Tooltip("Raycast searches for other vehicles will originate from this transform. Defaults to this transform if empty.")]
+        [SerializeField] private Transform avoidanceOrigin;
 
         [Header("Settings")]
         [SerializeField] private float minMoveSpeed = 7f;
@@ -38,6 +40,12 @@ namespace Enemies
 
         private const string PLAYER_TAG = "Player";
         private const string DESTRUCTION_ZONE_TAG = "DestructionZone";
+
+        private void Start()
+        {
+            // Default to this object's transform if null.
+            if (avoidanceOrigin == null) avoidanceOrigin = transform;
+        }
 
         private void Reset()
         {
@@ -146,7 +154,7 @@ namespace Enemies
             float result = desiredSpeed;
 
             // Check if we hit another TrafficVehicle ahead.
-            if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, detectionDistance, vehiclesMask))
+            if (Physics.Raycast(avoidanceOrigin.position, transform.forward, out RaycastHit hit, detectionDistance, vehiclesMask))
             {
                 // Get the distance to hit vehicle expressed as value between 0 and 1.
                 float normalizedDistance = hit.distance / detectionDistance;
