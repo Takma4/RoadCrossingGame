@@ -18,6 +18,9 @@ namespace UI
         [SerializeField] private TextMeshProUGUI playerHitHeaderText;
         [SerializeField] private TextMeshProUGUI playerHitBodyText;
 
+        [Header("Player Crossed")]
+        [SerializeField] private TextMeshProUGUI playerCrossedText;
+
         private void Awake()
         {
             // Subscribe to events.
@@ -27,6 +30,7 @@ namespace UI
             // Set the initial state of the text game objects.
             playerHitHeaderText.gameObject.SetActive(false);
             playerHitBodyText.gameObject.SetActive(false);
+            playerCrossedText.gameObject.SetActive(false);
         }
 
         private void OnDestroy()
@@ -42,7 +46,34 @@ namespace UI
         /// <param name="e">The event arguments.</param>
         private void OnGameStateChanged(GameStateEvent e)
         {
-            if (e.CurrentState == GameManager.GameState.PlayerHit) DisplayPlayerGotHitScreen();
+            switch (e.CurrentState)
+            {
+                case GameManager.GameState.PlayerHit:
+                    DisplayPlayerGotHitScreen();
+                    break;
+                case GameManager.GameState.PlayerCrossed:
+                    DisplayPlayerCrossedScreen();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Plays the UI animation when the player successfully crosses the street.
+        /// </summary>
+        private void DisplayPlayerCrossedScreen()
+        {
+            // Enable the game object.
+            playerCrossedText.gameObject.SetActive(true);
+
+            // Set its properties - start large and transparent, we will tween back to a scale and alpha of 1.
+            playerCrossedText.transform.localScale = new(1.5f, 1.5f, 1.5f);
+            playerCrossedText.alpha = 0f;
+
+            // Play the animation for the text.
+            // 0.3 duration for the scale.
+            // 0.133 duration for the alpha.
+            Tween.Scale(playerCrossedText.transform, 1f, 0.3f, Ease.InOutBounce);
+            Tween.Alpha(playerCrossedText, 1f, 0.133f);
         }
 
         /// <summary>
