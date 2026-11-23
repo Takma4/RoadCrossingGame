@@ -1,4 +1,5 @@
 using Events;
+using Managers;
 using UnityEngine;
 
 namespace Enemies
@@ -37,6 +38,11 @@ namespace Enemies
         /// The target move speed.
         /// </summary>
         private float desiredSpeed;
+
+        /// <summary>
+        /// Used by the <see cref="GameManager"/> to keep track of how many vehicles are in each lane.
+        /// </summary>
+        private Transform lane;
 
         private const string PLAYER_TAG = "Player";
         private const string DESTRUCTION_ZONE_TAG = "DestructionZone";
@@ -87,13 +93,15 @@ namespace Enemies
         /// Sets the position and rotation to match the <paramref name="point"/> Transform using the vehicle's Rigidbody.
         /// </summary>
         /// <param name="point">The transform to match.</param>
-        public void Initialize(Transform point)
+        public void Initialize(Transform point, Transform lane)
         {
             rigidbody.position = point.position;
             rigidbody.rotation = point.rotation;
 
             isDriving = true;
             isGameOver = false;
+
+            this.lane = lane;
 
             PickDesiredMoveSpeed();
         }
@@ -103,13 +111,15 @@ namespace Enemies
         /// </summary>
         /// <param name="worldPos">The world coordinate.</param>
         /// <param name="rotation">The rotation Quaternion.</param>
-        public void Initialize(Vector3 worldPos, Quaternion rotation)
+        public void Initialize(Vector3 worldPos, Quaternion rotation, Transform lane)
         {
             rigidbody.position = worldPos;
             rigidbody.rotation = rotation;
 
             isDriving = true;
             isGameOver = false;
+
+            this.lane = lane;
 
             PickDesiredMoveSpeed();
         }
@@ -186,6 +196,10 @@ namespace Enemies
             // Destroy this gameObject if we collide with a destruction zone trigger.
             if (other.CompareTag(DESTRUCTION_ZONE_TAG))
             {
+                // Publish the event before destroying.
+                EventBus.Publish(new VehicleDestroyedEvent(lane, this));
+
+                // Destroy this vehicle.
                 Destroy(gameObject);
             }
         }

@@ -23,6 +23,8 @@ namespace Managers
         [Header("Spawning")]
         [SerializeField] private List<Transform> spawnPoints;
         [SerializeField] private float spawnInterval = 2f;
+        [Tooltip("How many vehicles in a lane before it is considered overpopulated?")]
+        [SerializeField, Min(0)] private int overpopulationThreshold = 3;
 
         [Header("Settings")]
         [SerializeField] private float timeToStart = 3f;
@@ -32,6 +34,8 @@ namespace Managers
         private GameState state;
         private float spawnTimer = 0f;
         private float startTimer = 0f;
+
+        private Dictionary<Transform, int> lanePopulations = new();
 
         private void Awake()
         {
@@ -55,6 +59,13 @@ namespace Managers
             // Subscribe to events.
             EventBus.Subscribe<TrafficCollisionEvent>(OnTrafficCollision);
             EventBus.Subscribe<WinZoneReachedEvent>(OnPlayerReachedWinZone);
+            EventBus.Subscribe<VehicleDestroyedEvent>(OnVehicleDestroyed);
+
+            // Initialize the dictionary - initially, every lane has 0 vehicles.
+            foreach (Transform point in spawnPoints)
+            {
+                lanePopulations.Add(point, 0);
+            }
         }
 
         private void Start()
@@ -122,7 +133,10 @@ namespace Managers
 
             // Instantiate a vehicle prefab and initialize it.
             TrafficVehicle newVehicle = Instantiate(vehicle);
-            newVehicle.Initialize(randomPoint);
+            newVehicle.Initialize(randomPoint, randomPoint);
+
+            // Count one vehicle on the lane.
+            lanePopulations[randomPoint]++;
         }
 
         /// <summary>
@@ -138,21 +152,52 @@ namespace Managers
         }
 
         /// <summary>
-        /// Returns a random vehicle spawn point.
+        /// Returns a random vehicle spawn point. Might regect certain points if they are overpopulated.
         /// </summary>
         /// <returns>Returns a random Transform from <see cref="spawnPoints"/> or null if the list is empty.</returns>
         private Transform GetRandomSpawnPoint()
         {
             // Return null if the list is empty.
             if (spawnPoints.Count <= 0) return null;
-            
-            // Get a random inside the bounds of the list.
-            // Random.Range() upper range is exclusive when using integers,
-            // so we don't need to subtract 1.
-            int rand = Random.Range(0, spawnPoints.Count);
+
+            bool accepted = false;
+            int rand;
+            Transform point;
+            bool allOverpopulated = AreAllLanesOverpopulated();
+
+            do
+            {
+                // Get a random inside the bounds of the list.
+                // Random.Range() upper range is exclusive when using integers,
+                // so we don't need to subtract 1.
+                rand = Random.Range(0, spawnPoints.Count);
+
+                // The transform corresponding to the random.
+                point = spawnPoints[rand];
+
+                // Only accept low-populated lanes.
+                // Exception to this is when all lanes are overpopulated.
+                // In that case, accept the first random because otherwise
+                // we would get stuck in an infinite loop.
+                if (allOverpopulated || lanePopulations[point] <= overpopulationThreshold) accepted = true;
+            } while (!accepted);
             
             // Grab the transform from the list and return it.
-            return spawnPoints[rand];
+            return point;
+        }
+
+        /// <summary>
+        /// Checks if all of the <see cref="spawnPoints"/> have currently more vehicles than <see cref="overpopulationThreshold"/>.
+        /// </summary>
+        /// <returns>If all lanes are overpopulated.</returns>
+        private bool AreAllLanesOverpopulated()
+        {
+            foreach (Transform lane in spawnPoints)
+            {
+                if (lanePopulations[lane] <= overpopulationThreshold) return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -172,6 +217,16 @@ namespace Managers
         private void OnPlayerReachedWinZone(WinZoneReachedEvent e)
         {
             ChangeStateTo(GameState.PlayerCrossed);
+        }
+
+        /// <summary>
+        /// Callback for when a <see cref="TrafficVehicle"/> reaches the end of its lifetime.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        private void OnVehicleDestroyed(VehicleDestroyedEvent e)
+        {
+            // Clear one off the lane.
+            lanePopulations[e.Lane]--;
         }
 
         /// <summary>
@@ -205,6 +260,7 @@ namespace Managers
                 // Unsubscribe from events.
                 EventBus.Unsubscribe<TrafficCollisionEvent>(OnTrafficCollision);
                 EventBus.Unsubscribe<WinZoneReachedEvent>(OnPlayerReachedWinZone);
+                EventBus.Unsubscribe<VehicleDestroyedEvent>(OnVehicleDestroyed);
             }
         }
     }
