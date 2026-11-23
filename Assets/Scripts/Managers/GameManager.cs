@@ -18,7 +18,7 @@ namespace Managers
         public static GameManager Instance { get; private set; }
 
         [Header("References")]
-        [SerializeField] private TrafficVehicle vehiclePrefab;
+        [SerializeField] private List<TrafficVehicle> vehiclePrefabs = new();
 
         [Header("Spawning")]
         [SerializeField] private List<Transform> spawnPoints;
@@ -116,10 +116,25 @@ namespace Managers
         {
             // Grab a vehicle spawn transfrom at random.
             Transform randomPoint = GetRandomSpawnPoint();
-            
+
+            // Grab a random vehicle from the prefabs available.
+            TrafficVehicle vehicle = PickVehiclePrefab();
+
             // Instantiate a vehicle prefab and initialize it.
-            TrafficVehicle newVehicle = Instantiate(vehiclePrefab);
+            TrafficVehicle newVehicle = Instantiate(vehicle);
             newVehicle.Initialize(randomPoint);
+        }
+
+        /// <summary>
+        /// Grabs a random entry from the <see cref="vehiclePrefabs"/>.
+        /// </summary>
+        /// <returns>A random <see cref="TrafficVehicle"/> prefab or null if there are no elements inside <see cref="vehiclePrefabs"/>.</returns>
+        private TrafficVehicle PickVehiclePrefab()
+        {
+            if (vehiclePrefabs.Count <= 0) return null;
+
+            int rand = Random.Range(0, vehiclePrefabs.Count);
+            return vehiclePrefabs[rand];
         }
 
         /// <summary>
@@ -159,6 +174,11 @@ namespace Managers
             ChangeStateTo(GameState.PlayerCrossed);
         }
 
+        /// <summary>
+        /// Changes the state of the game and publishes a <see cref="GameStateEvent"/> if the <paramref name="state"/> is not equal
+        /// to the existing <see cref="state"/>.
+        /// </summary>
+        /// <param name="state">The target state.</param>
         private void ChangeStateTo(GameState state)
         {
             // Only change the state if we're not trying to transition into the existing state.
