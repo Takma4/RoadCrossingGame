@@ -52,8 +52,9 @@ namespace Managers
             // Set the initial state of the game.
             state = GameState.Readying;
 
-            // Subscribe to Traffic Collision Events.
+            // Subscribe to events.
             EventBus.Subscribe<TrafficCollisionEvent>(OnTrafficCollision);
+            EventBus.Subscribe<WinZoneReachedEvent>(OnPlayerReachedWinZone);
         }
 
         private void Start()
@@ -83,14 +84,7 @@ namespace Managers
             // If the time has passed, change the game state.
             if (startTimer > timeToStart)
             {
-                // Store the previous state.
-                GameState previous = state;
-
-                // Change the current state.
-                state = GameState.Playing;
-
-                // Publish the event.
-                EventBus.Publish<GameStateEvent>(new(previous, state));
+                ChangeStateTo(GameState.Playing);
             }
         }
 
@@ -153,15 +147,32 @@ namespace Managers
         /// <param name="collision">The collision object.</param>
         private void OnTrafficCollision(TrafficCollisionEvent collision)
         {
-            // Store the previous state.
-            GameState previous = state;
+            ChangeStateTo(GameState.PlayerHit);
+        }
 
-            // Change the current state.
-            state = GameState.PlayerHit;
+        /// <summary>
+        /// Callback for when the player reaches a win zone.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        private void OnPlayerReachedWinZone(WinZoneReachedEvent e)
+        {
+            ChangeStateTo(GameState.PlayerCrossed);
+        }
 
-            // Publish a GameStateEvent if we actually changed state.
-            if (previous != state)
+        private void ChangeStateTo(GameState state)
+        {
+            // Only change the state if we're not trying to transition into the existing state.
+            if (this.state != state)
+            {
+                // Grab the current state.
+                GameState previous = this.state;
+
+                // Change the state.
+                this.state = state;
+
+                // Publish the event.
                 EventBus.Publish(new GameStateEvent(previous, state));
+            }
         }
 
         private void OnDestroy()
@@ -171,8 +182,9 @@ namespace Managers
             {
                 Instance = null;
 
-                // Unsubscribe from Traffic Collision Events.
+                // Unsubscribe from events.
                 EventBus.Unsubscribe<TrafficCollisionEvent>(OnTrafficCollision);
+                EventBus.Unsubscribe<WinZoneReachedEvent>(OnPlayerReachedWinZone);
             }
         }
     }

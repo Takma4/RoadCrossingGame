@@ -31,6 +31,8 @@ namespace Player
         /// </summary>
         private const float SPEED_OFFSET = 0.1f;
 
+        private const string WIN_ZONE_TAG = "WinZone";
+
         private void Start()
         {
             if (movePlane == null) movePlane = Camera.main.transform;
@@ -162,6 +164,19 @@ namespace Player
 
             // Only rotate on the Y axis.
             transform.rotation = Quaternion.Euler(0f, rotation, 0f);
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            // Check if we just crossed a win zone trigger.
+            if (other.CompareTag(WIN_ZONE_TAG))
+            {
+                // Publish the event.
+                EventBus.Publish(new WinZoneReachedEvent());
+
+                // Pause the movement.
+                movementPaused = true;
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - DestructionZone
+  - WinZone
   layers:
   - Default
   - TransparentFX
