@@ -29,11 +29,15 @@ namespace UI
         [SerializeField] private Button restartButton;
         [SerializeField] private Button exitButton;
 
+        [Header("Score")]
+        [SerializeField] private TextMeshProUGUI scoreText;
+
         private void Awake()
         {
             // Subscribe to events.
             EventBus.Subscribe<CountdownStartedEvent>(OnCountdownStarted);
             EventBus.Subscribe<GameStateEvent>(OnGameStateChanged);
+            EventBus.Subscribe<ScoreChangedEvent>(OnScoreChanged);
 
             // Set the initial state of the text game objects.
             playerHitHeaderText.gameObject.SetActive(false);
@@ -47,6 +51,9 @@ namespace UI
             restartButton.onClick.AddListener(OnRestartButtonPressed);
             exitButton.onClick.AddListener(OnExitButtonPressed);
 
+            // Set the initial score text.
+            scoreText.SetText("0");
+
             // Mark the buttons as non-interactable.
             SetButtonsInteractable(false);
         }
@@ -56,6 +63,7 @@ namespace UI
             // Unsubscribe from events to cleanup.
             EventBus.Unsubscribe<CountdownStartedEvent>(OnCountdownStarted);
             EventBus.Unsubscribe<GameStateEvent>(OnGameStateChanged);
+            EventBus.Unsubscribe<ScoreChangedEvent>(OnScoreChanged);
         }
 
         /// <summary>
@@ -240,6 +248,16 @@ namespace UI
             // Scale at 1.2 in 0.5 seconds and immediately scale down to 1 in 0.2 seconds.
             Tween.Scale(countdownTimerText.transform, 1.2f, 0.5f, Ease.InOutBounce).Chain(
                 Tween.Scale(countdownTimerText.transform, 1f, 0.2f, Ease.Linear));
+        }
+
+        /// <summary>
+        /// Callback for when the game score changes.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        private void OnScoreChanged(ScoreChangedEvent e)
+        {
+            // Update the score text.
+            scoreText.SetText("{0}", e.Score);
         }
     }
 }

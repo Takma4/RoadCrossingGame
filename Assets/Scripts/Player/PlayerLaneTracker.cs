@@ -41,7 +41,8 @@ namespace Player
 
         private void Update()
         {
-            // Negative count means that we have not yet passed the first lane. In that case always the lane at index 0 (the first one).
+            // Negative count means that we have not yet passed the first lane. In that case always check the lane at
+            // index 0 (the first one).
             if (lastLane < 0)
             {
                 if (IsPlayerPastLane(0)) IncreaseLaneCount();

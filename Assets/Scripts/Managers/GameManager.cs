@@ -29,6 +29,7 @@ namespace Managers
 
         [Header("Settings")]
         [SerializeField] private float timeToStart = 3f;
+        [SerializeField] private int scorePerLane = 10;
 
         private bool clearInstance = false;
         
@@ -36,9 +37,12 @@ namespace Managers
         private float spawnTimer = 0f;
         private float startTimer = 0f;
 
+        private int currentScore = 0;
+
         private Dictionary<TrafficLane, int> lanePopulations = new();
 
         public IReadOnlyList<TrafficLane> Lanes => trafficLanes;
+        public int Score => currentScore;
 
         private void Awake()
         {
@@ -63,6 +67,7 @@ namespace Managers
             EventBus.Subscribe<TrafficCollisionEvent>(OnTrafficCollision);
             EventBus.Subscribe<WinZoneReachedEvent>(OnPlayerReachedWinZone);
             EventBus.Subscribe<VehicleDestroyedEvent>(OnVehicleDestroyed);
+            EventBus.Subscribe<LaneCrossedEvent>(OnLaneCrossed);
 
             // Initialize the dictionary - initially, every lane has 0 vehicles.
             foreach (TrafficLane point in trafficLanes)
@@ -233,6 +238,19 @@ namespace Managers
         }
 
         /// <summary>
+        /// Callback for when the player crosses a <see cref="TrafficLane"/>. Publishes a <see cref="ScoreChangedEvent"/>.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        private void OnLaneCrossed(LaneCrossedEvent e)
+        {
+            // Increase the score.
+            currentScore += scorePerLane;
+
+            // Publish the event.
+            EventBus.Publish(new ScoreChangedEvent(currentScore));
+        }
+
+        /// <summary>
         /// Changes the state of the game and publishes a <see cref="GameStateEvent"/> if the <paramref name="state"/> is not equal
         /// to the existing <see cref="state"/>.
         /// </summary>
@@ -264,6 +282,7 @@ namespace Managers
                 EventBus.Unsubscribe<TrafficCollisionEvent>(OnTrafficCollision);
                 EventBus.Unsubscribe<WinZoneReachedEvent>(OnPlayerReachedWinZone);
                 EventBus.Unsubscribe<VehicleDestroyedEvent>(OnVehicleDestroyed);
+                EventBus.Unsubscribe<LaneCrossedEvent>(OnLaneCrossed);
             }
         }
 
