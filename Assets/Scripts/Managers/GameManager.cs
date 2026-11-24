@@ -38,6 +38,8 @@ namespace Managers
 
         private Dictionary<TrafficLane, int> lanePopulations = new();
 
+        public IReadOnlyList<TrafficLane> Lanes => trafficLanes;
+
         private void Awake()
         {
             // Destroy any instances after the first one.
