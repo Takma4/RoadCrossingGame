@@ -51,13 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemies.TrafficVehicle
   rigidbody: {fileID: 3394844098929294070}
   avoidanceOrigin: {fileID: 6020046239265197644}
-  minMoveSpeed: 30
-  maxMoveSpeed: 50
-  stoppingSpeed: 2
-  detectionDistance: 20
-  vehiclesMask:
-    serializedVersion: 2
-    m_Bits: 128
+  configuration: {fileID: 11400000, guid: 2e4b1a7b0a17c8549b0b2794026e4a03, type: 2}
 --- !u!54 &3394844098929294070
 Rigidbody:
   m_ObjectHideFlags: 0

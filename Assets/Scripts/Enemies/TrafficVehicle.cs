@@ -1,3 +1,4 @@
+using Enemies.Data;
 using Events;
 using Managers;
 using UnityEngine;
@@ -15,16 +16,7 @@ namespace Enemies
         [SerializeField] private Rigidbody rigidbody;
         [Tooltip("Raycast searches for other vehicles will originate from this transform. Defaults to this transform if empty.")]
         [SerializeField] private Transform avoidanceOrigin;
-
-        [Header("Settings")]
-        [SerializeField] private float minMoveSpeed = 7f;
-        [SerializeField] private float maxMoveSpeed = 20f;
-        [Tooltip("Used when the player gets hit - all the other vehicles come to a full stop using this multiplier.")]
-        [SerializeField] private float stoppingSpeed = 2f;
-
-        [Header("Vehicle Avoidance")]
-        [SerializeField] private float detectionDistance = 10f;
-        [SerializeField] private LayerMask vehiclesMask;
+        [SerializeField] private VehicleConfigurationSO configuration;
 
         private bool isDriving = true;
         private bool isGameOver = false;
@@ -43,6 +35,11 @@ namespace Enemies
         /// Used by the <see cref="GameManager"/> to keep track of how many vehicles are in each lane.
         /// </summary>
         private Transform lane;
+
+        /// <summary>
+        /// The speed value used in the last physics update.
+        /// </summary>
+        public float CurrentSpeed => moveSpeed;
 
         private const string PLAYER_TAG = "Player";
         private const string DESTRUCTION_ZONE_TAG = "DestructionZone";
@@ -138,11 +135,11 @@ namespace Enemies
         }
 
         /// <summary>
-        /// Picks a random move speed between <see cref="minMoveSpeed"/> and <see cref="maxMoveSpeed"/> and applies it.
+        /// Picks a random move speed between the min and max move speeds defined inside of <see cref="configuration"/> and applies it.
         /// </summary>
         private void PickDesiredMoveSpeed()
         {
-            float speed = Random.Range(minMoveSpeed, maxMoveSpeed);
+            float speed = configuration.RandomMoveSpeed;
 
             SetDesiredSpeed(speed);
         }
@@ -157,17 +154,18 @@ namespace Enemies
             // If the player got hit, gradually reduce speed until we come to a full stop.
             if (isGameOver)
             {
-                return Mathf.Lerp(moveSpeed, 0f, Time.deltaTime * stoppingSpeed);
+                return Mathf.Lerp(moveSpeed, 0f, Time.deltaTime * configuration.StoppingSpeed);
             }
             
             // Initialize the result to the desiredSpeed. We will return the desiredSpeed if the raycast below doesn't hit anything.
             float result = desiredSpeed;
 
             // Check if we hit another TrafficVehicle ahead.
-            if (Physics.Raycast(avoidanceOrigin.position, transform.forward, out RaycastHit hit, detectionDistance, vehiclesMask))
+            if (Physics.Raycast(avoidanceOrigin.position, transform.forward, out RaycastHit hit, 
+                configuration.DetectionDistance, configuration.VehiclesMask))
             {
                 // Get the distance to hit vehicle expressed as value between 0 and 1.
-                float normalizedDistance = hit.distance / detectionDistance;
+                float normalizedDistance = hit.distance / configuration.DetectionDistance;
 
                 // Interpolate between 0 and the desired speed based on how close we are to the vehicle the raycast hit.
                 // The further away we are, the closest the speed will be to desiredSpeed.

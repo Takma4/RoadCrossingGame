@@ -1549,6 +1549,7 @@ MonoBehaviour:
   - {fileID: 772330550}
   - {fileID: 2143664197}
   spawnInterval: 0.4
+  overpopulationThreshold: 2
   timeToStart: 3
 --- !u!1 &881150893
 GameObject:
