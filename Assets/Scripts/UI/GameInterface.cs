@@ -3,6 +3,9 @@ using PrimeTween;
 using TMPro;
 using UnityEngine;
 using Managers;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 namespace UI
 {
@@ -21,6 +24,11 @@ namespace UI
         [Header("Player Crossed")]
         [SerializeField] private TextMeshProUGUI playerCrossedText;
 
+        [Header("Controls")]
+        [SerializeField] private CanvasGroup controlsGroup;
+        [SerializeField] private Button restartButton;
+        [SerializeField] private Button exitButton;
+
         private void Awake()
         {
             // Subscribe to events.
@@ -31,6 +39,16 @@ namespace UI
             playerHitHeaderText.gameObject.SetActive(false);
             playerHitBodyText.gameObject.SetActive(false);
             playerCrossedText.gameObject.SetActive(false);
+
+            // Hide the controls by default.
+            controlsGroup.alpha = 0f;
+
+            // Add the listeners to the buttons' onClick events.
+            restartButton.onClick.AddListener(OnRestartButtonPressed);
+            exitButton.onClick.AddListener(OnExitButtonPressed);
+
+            // Mark the buttons as non-interactable.
+            SetButtonsInteractable(false);
         }
 
         private void OnDestroy()
@@ -38,6 +56,38 @@ namespace UI
             // Unsubscribe from events to cleanup.
             EventBus.Unsubscribe<CountdownStartedEvent>(OnCountdownStarted);
             EventBus.Unsubscribe<GameStateEvent>(OnGameStateChanged);
+        }
+
+        /// <summary>
+        /// Callback for when the user clicks on the "Restart" button.
+        /// </summary>
+        private void OnRestartButtonPressed()
+        {
+            // Reload the current scene.
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        /// <summary>
+        /// Callback for when the user clicks on the "Exit" button. Exits the application if we're on a build
+        /// or exits play mode if we're in the editor.
+        /// </summary>
+        private void OnExitButtonPressed()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.ExitPlaymode();
+#else
+            Application.Quit();
+#endif
+        }
+
+        /// <summary>
+        /// Sets the endgame buttons' interactable state.
+        /// </summary>
+        /// <param name="interactable">The new state of the buttons.</param>
+        private void SetButtonsInteractable(bool interactable)
+        {
+            restartButton.interactable = interactable;
+            exitButton.interactable = interactable;
         }
 
         /// <summary>
@@ -50,9 +100,11 @@ namespace UI
             {
                 case GameManager.GameState.PlayerHit:
                     DisplayPlayerGotHitScreen();
+                    DisplayEndScreen();
                     break;
                 case GameManager.GameState.PlayerCrossed:
                     DisplayPlayerCrossedScreen();
+                    DisplayEndScreen();
                     break;
             }
         }
@@ -110,6 +162,22 @@ namespace UI
         }
 
         /// <summary>
+        /// Fades in the buttons (restart and exit), marks them as interactable and sets the current selection to the restart button.
+        /// </summary>
+        private void DisplayEndScreen()
+        {
+            // Set the buttons interactable.
+            SetButtonsInteractable(true);
+
+            // Fade in the controls group canvas group (target alpha 1 - duration 0.6).
+            Tween.Alpha(controlsGroup, 1f, 0.6f, Ease.InOutCirc).OnComplete(() =>
+            {
+                // After the animation is over, set the current selection to the restart button.
+                EventSystem.current.SetSelectedGameObject(restartButton.gameObject);
+            });
+        }
+
+        /// <summary>
         /// Callback for when the "start game countdown" starts.
         /// </summary>
         /// <param name="e">The event arguments.</param>
@@ -119,7 +187,7 @@ namespace UI
             float seconds = e.Seconds;
 
             // Set the UI text to the number of seconds before the game starts.
-            countdownTimerText.text = $"{seconds}";
+            countdownTimerText.SetText("{0}", seconds);
 
             // Play a bounce animation on the text.
             PlayCountdownBounceAnimation();
@@ -155,7 +223,7 @@ namespace UI
             // Wait one second then update the text, play a bounce animation and wait for the next second.
             Tween.Delay(1f, () =>
             {
-                countdownTimerText.text = $"{seconds}";
+                countdownTimerText.SetText("{0}", seconds);
                 PlayCountdownBounceAnimation();
                 PlayCountdownAnimation(seconds - 1f);
             });
