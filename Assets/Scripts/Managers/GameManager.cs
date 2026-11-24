@@ -248,6 +248,13 @@ namespace Managers
 
             // Publish the event.
             EventBus.Publish(new ScoreChangedEvent(currentScore));
+
+            // Calculate the position the floating text should spawn.
+            Vector3 lanePosition = e.Lane.referencePoint.position;
+            Vector3 spawnPosition = new(lanePosition.x, lanePosition.y + 1f, 0f);
+            
+            // Spawn a floating text.
+            FloatingTextManager.Instance.SpawnText(spawnPosition, scorePerLane.ToString());
         }
 
         /// <summary>
