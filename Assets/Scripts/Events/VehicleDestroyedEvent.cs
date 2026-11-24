@@ -1,4 +1,5 @@
 using Enemies;
+using Helpers;
 using UnityEngine;
 
 namespace Events
@@ -11,14 +12,14 @@ namespace Events
         /// <summary>
         /// The lane the destroyed vehicle belonged to.
         /// </summary>
-        public Transform Lane { get; }
+        public TrafficLane Lane { get; }
 
         /// <summary>
         /// The vehicle being destroyed.
         /// </summary>
         public TrafficVehicle Vehicle { get; }
 
-        public VehicleDestroyedEvent(Transform lane, TrafficVehicle vehicle)
+        public VehicleDestroyedEvent(TrafficLane lane, TrafficVehicle vehicle)
         {
             Lane = lane;
             Vehicle = vehicle;

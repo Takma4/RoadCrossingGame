@@ -1,5 +1,6 @@
 using Enemies.Data;
 using Events;
+using Helpers;
 using Managers;
 using UnityEngine;
 
@@ -34,7 +35,7 @@ namespace Enemies
         /// <summary>
         /// Used by the <see cref="GameManager"/> to keep track of how many vehicles are in each lane.
         /// </summary>
-        private Transform lane;
+        private TrafficLane lane;
 
         /// <summary>
         /// The speed value used in the last physics update.
@@ -83,17 +84,17 @@ namespace Enemies
         /// <param name="stateEvent">The event arguments.</param>
         private void OnGameStateChanged(GameStateEvent stateEvent)
         {
-            isGameOver = stateEvent.CurrentState == Managers.GameManager.GameState.PlayerHit;
+            isGameOver = stateEvent.CurrentState == GameManager.GameState.PlayerHit;
         }
 
         /// <summary>
-        /// Sets the position and rotation to match the <paramref name="point"/> Transform using the vehicle's Rigidbody.
+        /// Sets the position and rotation to match the given <paramref name="lane"/> using the vehicle's Rigidbody.
         /// </summary>
-        /// <param name="point">The transform to match.</param>
-        public void Initialize(Transform point, Transform lane)
+        /// <param name="lane">The lane to place in.</param>
+        public void Initialize(TrafficLane lane)
         {
-            rigidbody.position = point.position;
-            rigidbody.rotation = point.rotation;
+            rigidbody.position = lane.referencePoint.position;
+            rigidbody.rotation = lane.referencePoint.rotation;
 
             isDriving = true;
             isGameOver = false;
@@ -108,7 +109,8 @@ namespace Enemies
         /// </summary>
         /// <param name="worldPos">The world coordinate.</param>
         /// <param name="rotation">The rotation Quaternion.</param>
-        public void Initialize(Vector3 worldPos, Quaternion rotation, Transform lane)
+        /// <param name="lane">The lane this vehicle will belong to.</param>
+        public void Initialize(Vector3 worldPos, Quaternion rotation, TrafficLane lane)
         {
             rigidbody.position = worldPos;
             rigidbody.rotation = rotation;

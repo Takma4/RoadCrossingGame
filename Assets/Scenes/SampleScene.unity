@@ -1825,16 +1825,34 @@ MonoBehaviour:
   - {fileID: 1531971622408603103, guid: b13867cce79b7c14b9046ecb0f0eff3f, type: 3}
   - {fileID: 1531971622408603103, guid: 838bafde2d61b9f4f87bb2b22d15047a, type: 3}
   - {fileID: 1531971622408603103, guid: 26a62982b9d9cf642b7a09af7abd7e8a, type: 3}
-  spawnPoints:
-  - {fileID: 471298348}
-  - {fileID: 2106922650}
-  - {fileID: 780484703}
-  - {fileID: 1491287164}
-  - {fileID: 245097169}
-  - {fileID: 1883722420}
-  - {fileID: 833010086}
-  - {fileID: 772330550}
-  - {fileID: 2143664197}
+  trafficLanes:
+  - referencePoint: {fileID: 471298348}
+    width: 2
+    laneLength: -50
+  - referencePoint: {fileID: 2106922650}
+    width: 2
+    laneLength: -50
+  - referencePoint: {fileID: 780484703}
+    width: 2
+    laneLength: -50
+  - referencePoint: {fileID: 1491287164}
+    width: 2
+    laneLength: -50
+  - referencePoint: {fileID: 245097169}
+    width: 2
+    laneLength: -50
+  - referencePoint: {fileID: 1883722420}
+    width: 2
+    laneLength: -50
+  - referencePoint: {fileID: 833010086}
+    width: 2
+    laneLength: -50
+  - referencePoint: {fileID: 772330550}
+    width: 2
+    laneLength: -50
+  - referencePoint: {fileID: 2143664197}
+    width: 2
+    laneLength: -50
   spawnInterval: 0.4
   overpopulationThreshold: 2
   timeToStart: 3

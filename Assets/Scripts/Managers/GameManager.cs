@@ -1,5 +1,6 @@
 using Enemies;
 using Events;
+using Helpers;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace Managers
         [SerializeField] private List<TrafficVehicle> vehiclePrefabs = new();
 
         [Header("Spawning")]
-        [SerializeField] private List<Transform> spawnPoints;
+        [SerializeField] private List<TrafficLane> trafficLanes = new();
         [SerializeField] private float spawnInterval = 2f;
         [Tooltip("How many vehicles in a lane before it is considered overpopulated?")]
         [SerializeField, Min(0)] private int overpopulationThreshold = 3;
@@ -35,7 +36,7 @@ namespace Managers
         private float spawnTimer = 0f;
         private float startTimer = 0f;
 
-        private Dictionary<Transform, int> lanePopulations = new();
+        private Dictionary<TrafficLane, int> lanePopulations = new();
 
         private void Awake()
         {
@@ -62,7 +63,7 @@ namespace Managers
             EventBus.Subscribe<VehicleDestroyedEvent>(OnVehicleDestroyed);
 
             // Initialize the dictionary - initially, every lane has 0 vehicles.
-            foreach (Transform point in spawnPoints)
+            foreach (TrafficLane point in trafficLanes)
             {
                 lanePopulations.Add(point, 0);
             }
@@ -125,18 +126,18 @@ namespace Managers
         /// </summary>
         private void SpawnTraffic()
         {
-            // Grab a vehicle spawn transfrom at random.
-            Transform randomPoint = GetRandomSpawnPoint();
+            // Grab a traffic lane at random.
+            TrafficLane randomLane = GetRandomLane();
 
             // Grab a random vehicle from the prefabs available.
             TrafficVehicle vehicle = PickVehiclePrefab();
 
             // Instantiate a vehicle prefab and initialize it.
             TrafficVehicle newVehicle = Instantiate(vehicle);
-            newVehicle.Initialize(randomPoint, randomPoint);
+            newVehicle.Initialize(randomLane);
 
             // Count one vehicle on the lane.
-            lanePopulations[randomPoint]++;
+            lanePopulations[randomLane]++;
         }
 
         /// <summary>
@@ -154,15 +155,15 @@ namespace Managers
         /// <summary>
         /// Returns a random vehicle spawn point. Might regect certain points if they are overpopulated.
         /// </summary>
-        /// <returns>Returns a random Transform from <see cref="spawnPoints"/> or null if the list is empty.</returns>
-        private Transform GetRandomSpawnPoint()
+        /// <returns>Returns a random Transform from <see cref="trafficLanes"/> or null if the list is empty.</returns>
+        private TrafficLane GetRandomLane()
         {
             // Return null if the list is empty.
-            if (spawnPoints.Count <= 0) return null;
+            if (trafficLanes.Count <= 0) return null;
 
             bool accepted = false;
             int rand;
-            Transform point;
+            TrafficLane point;
             bool allOverpopulated = AreAllLanesOverpopulated();
 
             do
@@ -170,10 +171,10 @@ namespace Managers
                 // Get a random inside the bounds of the list.
                 // Random.Range() upper range is exclusive when using integers,
                 // so we don't need to subtract 1.
-                rand = Random.Range(0, spawnPoints.Count);
+                rand = Random.Range(0, trafficLanes.Count);
 
                 // The transform corresponding to the random.
-                point = spawnPoints[rand];
+                point = trafficLanes[rand];
 
                 // Only accept low-populated lanes.
                 // Exception to this is when all lanes are overpopulated.
@@ -187,12 +188,12 @@ namespace Managers
         }
 
         /// <summary>
-        /// Checks if all of the <see cref="spawnPoints"/> have currently more vehicles than <see cref="overpopulationThreshold"/>.
+        /// Checks if all of the <see cref="trafficLanes"/> have currently more vehicles than <see cref="overpopulationThreshold"/>.
         /// </summary>
         /// <returns>If all lanes are overpopulated.</returns>
         private bool AreAllLanesOverpopulated()
         {
-            foreach (Transform lane in spawnPoints)
+            foreach (TrafficLane lane in trafficLanes)
             {
                 if (lanePopulations[lane] <= overpopulationThreshold) return false;
             }
@@ -261,6 +262,38 @@ namespace Managers
                 EventBus.Unsubscribe<TrafficCollisionEvent>(OnTrafficCollision);
                 EventBus.Unsubscribe<WinZoneReachedEvent>(OnPlayerReachedWinZone);
                 EventBus.Unsubscribe<VehicleDestroyedEvent>(OnVehicleDestroyed);
+            }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            // Utility - visualize all traffic lanes.
+            foreach (TrafficLane lane in trafficLanes)
+            {
+                // Continue with the next iteration of the loop if the reference point is null.
+                // Prevents exceptions from getting spammed in the console when setting up the lanes.
+                if (lane.referencePoint == null) continue;
+
+                // The reference point acts as the middle of the lane.
+                Vector3 middle = lane.referencePoint.position;
+
+                // Grab the width of the lane.
+                float width = lane.width;
+
+                // Calculate the start positions of the two sides of the lane.
+                Vector3 leftStart = new(middle.x - (width / 2f), middle.y, middle.z);
+                Vector3 rightStart = new(middle.x + (width / 2f), middle.y, middle.z);
+
+                // Calculate the end positions of the two sides of the lane using the start positions.
+                Vector3 leftEnd = new(leftStart.x, leftStart.y, leftStart.z + lane.laneLength);
+                Vector3 rightEnd = new(rightStart.x, rightStart.y, rightStart.z + lane.laneLength);
+
+                // Set the draw color.
+                Gizmos.color = Color.cyan;
+
+                // Draw the two lines.
+                Gizmos.DrawLine(leftStart, leftEnd);
+                Gizmos.DrawLine(rightStart, rightEnd);
             }
         }
     }
