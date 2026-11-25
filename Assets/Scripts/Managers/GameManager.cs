@@ -187,7 +187,7 @@ namespace Managers
                 // Exception to this is when all lanes are overpopulated.
                 // In that case, accept the first random because otherwise
                 // we would get stuck in an infinite loop.
-                if (allOverpopulated || lanePopulations[point] <= overpopulationThreshold) accepted = true;
+                if (allOverpopulated || lanePopulations[point] < overpopulationThreshold) accepted = true;
             } while (!accepted);
             
             // Grab the transform from the list and return it.
@@ -202,7 +202,7 @@ namespace Managers
         {
             foreach (TrafficLane lane in trafficLanes)
             {
-                if (lanePopulations[lane] <= overpopulationThreshold) return false;
+                if (lanePopulations[lane] < overpopulationThreshold) return false;
             }
 
             return true;
