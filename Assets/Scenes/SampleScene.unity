@@ -4177,6 +4177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fe1ef42afd02ee438fffcbd700ee485, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Managers.GameManager
+  player: {fileID: 159194790}
   vehiclePrefabs:
   - {fileID: 1531971622408603103, guid: b13867cce79b7c14b9046ecb0f0eff3f, type: 3}
   - {fileID: 1531971622408603103, guid: 838bafde2d61b9f4f87bb2b22d15047a, type: 3}
@@ -4215,6 +4216,8 @@ MonoBehaviour:
   timeToStart: 3
   scorePerLane: 10
   streakResetTime: 1
+  scoreReduction: 3
+  scoreReductionInterval: 3
 --- !u!1 &881150893
 GameObject:
   m_ObjectHideFlags: 0

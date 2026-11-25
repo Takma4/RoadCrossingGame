@@ -19,6 +19,7 @@ namespace Managers
         public static GameManager Instance { get; private set; }
 
         [Header("References")]
+        [SerializeField] private Transform player;
         [SerializeField] private List<TrafficVehicle> vehiclePrefabs = new();
         [SerializeField] private ParticleSystem collisionParticle;
 
@@ -34,13 +35,24 @@ namespace Managers
         [Tooltip("If the player crosses lanes fast, the score reward will be multiplied by the amount of " +
             "lanes they crossed. This timer acts as the limit before the progress resets to 0.")]
         [SerializeField] private float streakResetTime = 1f;
+        [Tooltip("How many points will be deducted when the player is idle. Works based on intervals (see Score Reduction Interval). " +
+            "Set to a negative number to bypass.")]
+        [SerializeField] private int scoreReduction = 3;
+        [Tooltip("The time interval before the score is decreased. Set to a negative number to bypass.")]
+        [SerializeField] private float scoreReductionInterval = 3f;
 
+        /// <summary>
+        /// Since this is a singleton and there is some destruction logic that should be happening,
+        /// we keep track of whether or not this instance of <see cref="GameManager"/> is the static <see cref="Instance"/>.
+        /// That is because the destruction logic should only happen on the one <see cref="Instance"/>.
+        /// </summary>
         private bool clearInstance = false;
         
         private GameState state;
         private float spawnTimer = 0f;
         private float startTimer = 0f;
         private float streakTimer = 0f;
+        private float idleTimer = 0f;
 
         private int currentScore = 0;
         private int currentSteak = 0;
@@ -93,6 +105,41 @@ namespace Managers
             UpdateStartTimer();
             UpdateSpawnTimer();
             UpdateStreakTimer();
+            UpdateIdleTimer();
+        }
+
+        /// <summary>
+        /// Updates the <see cref="idleTimer"/> and deducts <see cref="scoreReduction"/> points if 
+        /// <see cref="scoreReductionInterval"/> seconds have passed. Also invokes a <see cref="ScoreChangedEvent"/> if neccessary.
+        /// Will skip the method if one of <see cref="scoreReductionInterval"/> and <see cref="scoreReduction"/> is negative.
+        /// </summary>
+        private void UpdateIdleTimer()
+        {
+            // Don't accidentally deduct points if we're not playing.
+            if (state != GameState.Playing) return;
+
+            // Don't do anything if we want to bypass idle score reduction.
+            if (scoreReductionInterval < 0 || scoreReduction < 0) return;
+
+            // Tick the timer.
+            idleTimer += Time.deltaTime;
+
+            // If enough seconds have passed.
+            if (idleTimer > scoreReductionInterval)
+            {
+                // Reduce the score and clamp if neccessary.
+                currentScore -= scoreReduction;
+                if (currentScore < 0) currentScore = 0;
+
+                // Spawn a floating text.
+                FloatingTextManager.Instance.SpawnText(player.position, scoreReduction.ToString());
+
+                // Publish the event.
+                EventBus.Publish(new ScoreChangedEvent(currentScore));
+
+                // Reset the timer for the next interval.
+                idleTimer = 0f;
+            }
         }
 
         /// <summary>
@@ -283,6 +330,9 @@ namespace Managers
 
             // Reset the streak timer.
             streakTimer = 0f;
+
+            // Reset the idle timer.
+            idleTimer = 0f;
 
             // Calculate the score to add.
             int scoreToAdd = scorePerLane * currentSteak;
