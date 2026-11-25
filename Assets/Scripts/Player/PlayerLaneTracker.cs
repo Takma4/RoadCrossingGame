@@ -86,7 +86,6 @@ namespace Player
             lastLane++;
 
             EventBus.Publish(new LaneCrossedEvent(lanes[lastLane]));
-            
         }
     }
 }

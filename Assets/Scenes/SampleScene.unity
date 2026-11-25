@@ -4214,6 +4214,7 @@ MonoBehaviour:
   overpopulationThreshold: 2
   timeToStart: 3
   scorePerLane: 10
+  streakResetTime: 1
 --- !u!1 &881150893
 GameObject:
   m_ObjectHideFlags: 0

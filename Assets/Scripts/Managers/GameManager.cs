@@ -31,14 +31,19 @@ namespace Managers
         [Header("Settings")]
         [SerializeField] private float timeToStart = 3f;
         [SerializeField] private int scorePerLane = 10;
+        [Tooltip("If the player crosses lanes fast, the score reward will be multiplied by the amount of " +
+            "lanes they crossed. This timer acts as the limit before the progress resets to 0.")]
+        [SerializeField] private float streakResetTime = 1f;
 
         private bool clearInstance = false;
         
         private GameState state;
         private float spawnTimer = 0f;
         private float startTimer = 0f;
+        private float streakTimer = 0f;
 
         private int currentScore = 0;
+        private int currentSteak = 0;
 
         private Dictionary<TrafficLane, int> lanePopulations = new();
 
@@ -87,6 +92,28 @@ namespace Managers
         {
             UpdateStartTimer();
             UpdateSpawnTimer();
+            UpdateStreakTimer();
+        }
+
+        /// <summary>
+        /// Updates the <see cref="streakTimer"/> and resets the <see cref="currentSteak"/> if
+        /// <see cref="streakResetTime"/> seconds have passed.
+        /// </summary>
+        private void UpdateStreakTimer()
+        {
+            // No need to update the timer if we have no streak going.
+            if (currentSteak == 0) return;
+
+            // Tick the timer.
+            streakTimer += Time.deltaTime;
+
+            // If enough seconds have passed.
+            if (streakTimer > streakResetTime)
+            {
+                // Reset the streak and the timer back to 0.
+                currentSteak = 0;
+                streakTimer = 0f;
+            }
         }
 
         /// <summary>
@@ -251,8 +278,17 @@ namespace Managers
         /// <param name="e">The event arguments.</param>
         private void OnLaneCrossed(LaneCrossedEvent e)
         {
+            // Increase the streak
+            currentSteak++;
+
+            // Reset the streak timer.
+            streakTimer = 0f;
+
+            // Calculate the score to add.
+            int scoreToAdd = scorePerLane * currentSteak;
+
             // Increase the score.
-            currentScore += scorePerLane;
+            currentScore += scoreToAdd;
 
             // Publish the event.
             EventBus.Publish(new ScoreChangedEvent(currentScore));
@@ -262,7 +298,7 @@ namespace Managers
             Vector3 spawnPosition = new(lanePosition.x, lanePosition.y + 1f, 0f);
             
             // Spawn a floating text.
-            FloatingTextManager.Instance.SpawnText(spawnPosition, scorePerLane.ToString());
+            FloatingTextManager.Instance.SpawnText(spawnPosition, scoreToAdd.ToString());
         }
 
         /// <summary>
