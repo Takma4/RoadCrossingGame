@@ -186,8 +186,17 @@ namespace Enemies
             {
                 isDriving = false;
 
+                // Calculate the position the collision occured in.
+                Vector3 collisionPosition = collision.transform.position;
+                Vector3 direction = (collision.transform.position - transform.position).normalized;
+
+                if (Physics.Raycast(transform.position, direction, out RaycastHit hit, 999f, ~configuration.VehiclesMask))
+                {
+                    collisionPosition = hit.point;
+                }
+
                 // Fire a traffic collision event.
-                EventBus.Publish(new TrafficCollisionEvent());
+                EventBus.Publish(new TrafficCollisionEvent(collisionPosition));
             }
         }
 

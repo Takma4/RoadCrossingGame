@@ -20,6 +20,7 @@ namespace Managers
 
         [Header("References")]
         [SerializeField] private List<TrafficVehicle> vehiclePrefabs = new();
+        [SerializeField] private ParticleSystem collisionParticle;
 
         [Header("Spawning")]
         [SerializeField] private List<TrafficLane> trafficLanes = new();
@@ -215,6 +216,13 @@ namespace Managers
         /// <param name="collision">The collision object.</param>
         private void OnTrafficCollision(TrafficCollisionEvent collision)
         {
+            // Play the particle if there is one and if we're not already in the hit state.
+            if (collisionParticle && state != GameState.PlayerHit)
+            {
+                collisionParticle.transform.position = collision.Position;
+                collisionParticle.Play();
+            }
+
             ChangeStateTo(GameState.PlayerHit);
         }
 
