@@ -17,3 +17,9 @@
 - Author: Kenney
 - Source: [Kenney's website](https://kenney.nl/assets/cube-pets)
 - License: CC0
+
+## Kenney Car Kit
+
+- Author: Kenney
+- Source: [Kenney's website](https://kenney.nl/assets/car-kit)
+- License: CC0
