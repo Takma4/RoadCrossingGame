@@ -4066,9 +4066,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Managers.GameManager
   player: {fileID: 159194790}
   vehiclePrefabs:
-  - {fileID: 1531971622408603103, guid: b13867cce79b7c14b9046ecb0f0eff3f, type: 3}
-  - {fileID: 1531971622408603103, guid: 838bafde2d61b9f4f87bb2b22d15047a, type: 3}
-  - {fileID: 1531971622408603103, guid: 26a62982b9d9cf642b7a09af7abd7e8a, type: 3}
+  - {fileID: 5168772235602882256, guid: b285b8555e747044fa5f691584c453b4, type: 3}
+  - {fileID: 3999255096316029440, guid: fa5b107c68f175a4cab02f102ed753eb, type: 3}
+  - {fileID: 6571464292510690827, guid: bf8c43d4d58c3be47ba4f12ecf82f593, type: 3}
   collisionParticle: {fileID: 572666642}
   trafficLanes:
   - referencePoint: {fileID: 471298348}

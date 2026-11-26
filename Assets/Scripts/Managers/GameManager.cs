@@ -132,7 +132,7 @@ namespace Managers
                 if (currentScore < 0) currentScore = 0;
 
                 // Spawn a floating text.
-                FloatingTextManager.Instance.SpawnText(player.position, scoreReduction.ToString());
+                FloatingTextManager.Instance.SpawnText(player.position, $"-{scoreReduction}", Color.red);
 
                 // Publish the event.
                 EventBus.Publish(new ScoreChangedEvent(currentScore));
@@ -348,7 +348,7 @@ namespace Managers
             Vector3 spawnPosition = new(lanePosition.x, lanePosition.y + 1f, 0f);
             
             // Spawn a floating text.
-            FloatingTextManager.Instance.SpawnText(spawnPosition, scoreToAdd.ToString());
+            FloatingTextManager.Instance.SpawnText(spawnPosition, scoreToAdd.ToString(), Color.white);
         }
 
         /// <summary>

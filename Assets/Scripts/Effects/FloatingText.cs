@@ -41,10 +41,12 @@ namespace Effects
         /// <param name="position">The spawn position.</param>
         /// <param name="text">The text to be displayed.</param>
         /// <param name="pool">The pool this text belongs to.</param>
-        public void Initialize(Vector3 position, string text, FloatingTextPool pool)
+        /// <param name="color">The color of the text.</param>
+        public void Initialize(Vector3 position, string text, FloatingTextPool pool, Color color)
         {
             SetPosition(position);
             SetText(text);
+            SetTextColor(color);
             SetPool(pool);
             PlayAnimation();
         }
@@ -65,6 +67,15 @@ namespace Effects
         private void SetText(string text)
         {
             this.text.SetText(text);
+        }
+
+        /// <summary>
+        /// Changes the color of the text.
+        /// </summary>
+        /// <param name="color">The target color.</param>
+        private void SetTextColor(Color color)
+        {
+            text.color = color;
         }
 
         /// <summary>
