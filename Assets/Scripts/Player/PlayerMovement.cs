@@ -14,6 +14,8 @@ namespace Player
         [SerializeField] private CharacterController controller;
         [Tooltip("Will rotate based on the forward axis (the blue arrow) of this transform. Will use the main camera if empty.")]
         [SerializeField] private Transform movePlane;
+        [SerializeField] private Transform characterSpawnLocation;
+        [SerializeField] private PlayerCharacterSO characterPreset;
 
         [Header("Settings")]
         [SerializeField, Min(0.5f)] private float moveSpeed = 2f;
@@ -21,8 +23,15 @@ namespace Player
         [SerializeField] private float speedChangeRate = 1f;
         [SerializeField, Range(0f, 1f)] private float rotationSpeed = 1f;
 
+        private Animator animator;
+
         private float rotationVelocity;
         private bool movementPaused = true;
+
+        /// <summary>
+        /// The id for the move animator float parameter.
+        /// </summary>
+        private int moveId;
 
         /// <summary>
         /// If the current move speed is not within <c>[targetSpeed - SPEED_OFFSET, targetSpeed + SPEED_OFFSET]</c>,
@@ -32,13 +41,22 @@ namespace Player
         private const float SPEED_OFFSET = 0.1f;
 
         private const string WIN_ZONE_TAG = "WinZone";
+        
+        /// <summary>
+        /// The move speed animator parameter name.
+        /// </summary>
+        private const string MOVE_SPEED_NAME = "MoveSpeed";
 
         private void Start()
         {
+            // Default to the camera plane if empty.
             if (movePlane == null) movePlane = Camera.main.transform;
 
             // Start paused by default.
             movementPaused = true;
+
+            SpawnPlayerCharacter();
+            AssignAnimatorIDs();
         }
 
         private void Reset()
@@ -71,6 +89,28 @@ namespace Player
         }
 
         /// <summary>
+        /// Spawns the player character as defined in <see cref="characterPreset"/> and attempts to grab its
+        /// animator.
+        /// </summary>
+        private void SpawnPlayerCharacter()
+        {
+            // Do nothing if there is no character preset.
+            if (characterPreset == null) return;
+
+            // Get the prefab and the offset from the character preset.
+            GameObject prefab = characterPreset.Prefab;
+            Vector3 offset = characterPreset.SpawnOffset;
+
+            // Instantiate a new GameObject and set the local position to the spawn offset
+            // and reset its rotation.
+            GameObject player = Instantiate(prefab, characterSpawnLocation);
+            player.transform.SetLocalPositionAndRotation(offset, Quaternion.identity);
+
+            // Attempt to find an Animator.
+            animator = player.GetComponent<Animator>();
+        }
+
+        /// <summary>
         /// Callback for when the game state changes.
         /// </summary>
         /// <param name="stateEvent">The event arguments.</param>
@@ -96,6 +136,9 @@ namespace Player
 
             // Make sure the movement is frame-rate independent by multiplying by Time.deltaTime.
             nextMovement *= Time.deltaTime;
+
+            // Update the animator.
+            if (animator != null) animator.SetFloat(moveId, speed);
 
             // Move the controller.
             controller.Move(nextMovement);
@@ -164,6 +207,16 @@ namespace Player
 
             // Only rotate on the Y axis.
             transform.rotation = Quaternion.Euler(0f, rotation, 0f);
+        }
+
+        /// <summary>
+        /// Assigns the animator parameters to ID integers. It is more performant to change animator parameters
+        /// by using integers (IDs) than it is to use strings (just the parameter name). Use this once at the beginning of the game
+        /// and before any <see cref="animator"/> calls.
+        /// </summary>
+        private void AssignAnimatorIDs()
+        {
+            moveId = Animator.StringToHash(MOVE_SPEED_NAME);
         }
 
         private void OnTriggerEnter(Collider other)
