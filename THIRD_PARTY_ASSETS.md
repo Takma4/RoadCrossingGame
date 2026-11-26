@@ -1,1 +1,13 @@
+# Third Party Assets
 
+## PrimeTween
+
+- Author: KyryloKuzyk
+- Source: [GitHub repository](https://github.com/KyryloKuzyk/PrimeTween)
+- License: [LICENSE from GitHub repository](https://github.com/KyryloKuzyk/PrimeTween/blob/main/LICENSE)
+
+## Cinemachine
+
+- Author: Unity Technologies
+- Source: [GitHub repository](https://github.com/Unity-Technologies/com.unity.cinemachine)
+- License: [Unity Companion License](https://unity.com/legal/licenses/unity-companion-license)
