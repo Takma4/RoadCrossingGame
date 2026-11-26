@@ -251,7 +251,7 @@ MonoBehaviour:
   controller: {fileID: 159194794}
   movePlane: {fileID: 1093913058}
   characterSpawnLocation: {fileID: 159194790}
-  characterPreset: {fileID: 11400000, guid: 135bbeeceb220494590d240e949932b0, type: 2}
+  characterPreset: {fileID: 11400000, guid: bfd8291f757b62e468e90ae991fb1ed6, type: 2}
   moveSpeed: 2
   sprintSpeed: 5.7
   speedChangeRate: 10
@@ -4066,9 +4066,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Managers.GameManager
   player: {fileID: 159194790}
   vehiclePrefabs:
-  - {fileID: 5168772235602882256, guid: b285b8555e747044fa5f691584c453b4, type: 3}
   - {fileID: 3999255096316029440, guid: fa5b107c68f175a4cab02f102ed753eb, type: 3}
+  - {fileID: 9087415678587531920, guid: eb3a135f2db4fd649a5458ea1ebeea5e, type: 3}
+  - {fileID: 5046910819991345084, guid: 37336cbcdd1eac342b4c649955d4f224, type: 3}
+  - {fileID: 785371667981592117, guid: a1a2edf750ac988418b7687eee952817, type: 3}
+  - {fileID: 6929024807269590672, guid: d60249b66c59ba3488a71e345afee241, type: 3}
+  - {fileID: 5168772235602882256, guid: b285b8555e747044fa5f691584c453b4, type: 3}
   - {fileID: 6571464292510690827, guid: bf8c43d4d58c3be47ba4f12ecf82f593, type: 3}
+  - {fileID: 3477551246363243180, guid: ed2484bb91a306c40b3c8dcf2ec410cc, type: 3}
+  - {fileID: 4361873902244000706, guid: 5e29b95b0bcbe2a40a574820da30c7fd, type: 3}
+  - {fileID: 5971938758817633565, guid: 8de57a70bb4439c418ab4e0ae72a3e17, type: 3}
+  - {fileID: 6678248891102395604, guid: d96269ef06fd08747b5f8cd773b5712f, type: 3}
+  - {fileID: 5707061095070480797, guid: d2e41a60208cbc3458f8e680874a6298, type: 3}
+  - {fileID: 105601259588648536, guid: 2dbfe51f651463047aa1915aa8b9efb6, type: 3}
+  - {fileID: 5660096445928127628, guid: 34d29a4aa70e7194f9e9ef21f0f1ddd6, type: 3}
+  - {fileID: 2385516643383764653, guid: 41dc5e680da284040ba29d6fcf596e8d, type: 3}
+  - {fileID: 8421133563893770498, guid: 19f19e62d047d6448a2063a058bab120, type: 3}
+  - {fileID: 3144338182693288142, guid: 199069ecc780e7e4dbc7ea86630baf42, type: 3}
+  - {fileID: 3545290646764480548, guid: a5f37c08ad94ed3448bb0301ed922546, type: 3}
+  - {fileID: 8481432908582593340, guid: 120fe68b13cbb4440907616f58f73573, type: 3}
+  - {fileID: 8850881841738263735, guid: c29393e0db2333841949be58cc63fb85, type: 3}
+  - {fileID: 1477867751969267393, guid: 2eacead6bcc41d5419994bc344f400d6, type: 3}
+  - {fileID: 5459425874018193660, guid: 07a0741cc68283f4c85c454d9bb7f864, type: 3}
+  - {fileID: 988032343460845931, guid: abe553bc1b75927408a538cf5cf8c6c6, type: 3}
+  - {fileID: 6360261867702697737, guid: 4e26e180450ef9f428d10c53fd2fd70b, type: 3}
+  - {fileID: 1345838492170062775, guid: 0accbb451e7c9314f9d5d30eb721fdcb, type: 3}
   collisionParticle: {fileID: 572666642}
   trafficLanes:
   - referencePoint: {fileID: 471298348}
