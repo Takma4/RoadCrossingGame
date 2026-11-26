@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Giraffe Controller
+  m_Controller: {fileID: 9100000, guid: d5d1a9b10f41dbf4ba739f40c220cd2c, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: b9d2d5beb16be2146b48ab407dc3212b, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 37f89cfc66620fc48b58cbbb0a55dfd6, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 8d477c2ca14784448a091efa0a2eaf39, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 356727b9724eee140a2d0e1665f6f9ab, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: d93195aa3f4e1d04cb847ad4a6ae5ce6, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 058b857a9d47f144bb02e963bb300d9f, type: 2}

@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Panda Controller
+  m_Controller: {fileID: 9100000, guid: d5d1a9b10f41dbf4ba739f40c220cd2c, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: b9d2d5beb16be2146b48ab407dc3212b, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 5300adfb804a40c4eb237c74ce0f7134, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 8d477c2ca14784448a091efa0a2eaf39, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d4aeecd64f7302f43abe0c528cf43644, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: d93195aa3f4e1d04cb847ad4a6ae5ce6, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 3e74c341b8e67da4cb71bfa1a75d6fdc, type: 2}

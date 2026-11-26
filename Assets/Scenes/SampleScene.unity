@@ -233,7 +233,7 @@ CharacterController:
   m_Radius: 0.741683
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_SkinWidth: 0.02
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &159194795
@@ -251,7 +251,7 @@ MonoBehaviour:
   controller: {fileID: 159194794}
   movePlane: {fileID: 1093913058}
   characterSpawnLocation: {fileID: 159194790}
-  characterPreset: {fileID: 11400000, guid: a3762255c9560534084fc26bc7fced5c, type: 2}
+  characterPreset: {fileID: 11400000, guid: 135bbeeceb220494590d240e949932b0, type: 2}
   moveSpeed: 2
   sprintSpeed: 5.7
   speedChangeRate: 10
