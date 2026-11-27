@@ -1474,7 +1474,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 2
-  m_Radius: 0.741683
+  m_Radius: 0.6413002
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.02
@@ -1495,7 +1495,7 @@ MonoBehaviour:
   controller: {fileID: 159194794}
   movePlane: {fileID: 1093913058}
   characterSpawnLocation: {fileID: 159194790}
-  characterPreset: {fileID: 11400000, guid: bfd8291f757b62e468e90ae991fb1ed6, type: 2}
+  characterPreset: {fileID: 11400000, guid: 93c2ba90828e6414c9f177c2a39b489e, type: 2}
   moveSpeed: 2
   sprintSpeed: 5.7
   speedChangeRate: 10
