@@ -23,3 +23,9 @@
 - Author: Kenney
 - Source: [Kenney's website](https://kenney.nl/assets/car-kit)
 - License: CC0
+
+## Kenney Nature Kit
+
+- Author: Kenney
+- Source [Kenney's website](https://kenney.nl/assets/nature-kit)
+- License: CC0
