@@ -23,9 +23,3 @@
 - Author: Kenney
 - Source: [Kenney's website](https://kenney.nl/assets/car-kit)
 - License: CC0
-
-## Downtown City MegaKit (Standard)
-
-- Author: Quaternius
-- Source: [Itch.io page](https://quaternius.itch.io/downtown-city-megakit)
-- License: CC0
